@@ -39,9 +39,9 @@ export default function AlumniListCards() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("/api/admin/alumni")
+    fetch("/api/alumni")
       .then((res) => res.json())
-      .then((data) => setYears(data))
+      .then((data) => setYears(Array.isArray(data) ? data : []))
       .finally(() => setIsLoading(false));
   }, []);
 
