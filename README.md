@@ -145,13 +145,13 @@ Kemudian sesuaikan nilai variabel.
 
 ```bash
 npx prisma generate
-npx prisma db push
+npx prisma migrate deploy
 ```
 
 Untuk development dengan data awal:
 
 ```bash
-npx prisma db seed
+npm run db:seed
 ```
 
 ### 5. Menjalankan Development Server
@@ -166,7 +166,7 @@ Aplikasi berjalan di `http://localhost:3000`
 
 ```env
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/himpenas_db"
+DATABASE_URL="postgresql://himpunan:password123@localhost:5433/himpenas?schema=public"
 
 # Authentication
 JWT_SECRET="your-jwt-secret-key-minimum-32-characters"
@@ -182,6 +182,15 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 | `JWT_SECRET`          | Secret key untuk signing JWT token |
 | `NEXTAUTH_SECRET`     | Secret key untuk NextAuth session  |
 | `NEXT_PUBLIC_APP_URL` | Base URL aplikasi                  |
+
+Untuk lingkungan development, seed membuat akun admin berikut bila belum ada:
+
+```text
+Email: admin2@example.com
+Password: admin123
+```
+
+Ganti password tersebut setelah login pertama untuk lingkungan selain lokal.
 
 ## Scripts yang Tersedia
 

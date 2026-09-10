@@ -3,6 +3,16 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import formidable, { Fields, Files, File } from "formidable";
 import fs from "fs";
 import path from "path";
+import heicConvert from "heic-convert";
+
+const imageMimeTypes = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+]);
 
 // Next.js harus matiin bodyParser untuk form-data
 export const config = {
@@ -35,12 +45,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const f: File | undefined = Array.isArray(raw) ? raw[0] : raw;
       if (!f) return res.status(400).json({ error: "No file uploaded" });
 
-      // file sudah berada di uploadDir karena pakai uploadDir + keepExtensions
-      const fileName = path.basename(f.filepath);
+      const extension = path.extname(f.originalFilename || f.newFilename || "").toLowerCase();
+      const isHeic = [".heic", ".heif"].includes(extension) || ["image/heic", "image/heif"].includes(f.mimetype || "");
+      if (!imageMimeTypes.has(f.mimetype || "") && !isHeic) {
+        await fs.promises.unlink(f.filepath).catch(() => undefined);
+        return res.status(400).json({ error: "Format file tidak didukung" });
+      }
+
+      let filePath = f.filepath;
+      let fileName = path.basename(filePath);
+      let mimetype = f.mimetype || "application/octet-stream";
+
+      if (isHeic) {
+        const converted = await heicConvert({
+          buffer: await fs.promises.readFile(f.filepath),
+          format: "JPEG",
+          quality: 0.9,
+        });
+        fileName = `${path.parse(fileName).name}.jpg`;
+        filePath = path.join(uploadDir, fileName);
+        await fs.promises.writeFile(filePath, converted);
+        await fs.promises.unlink(f.filepath);
+        mimetype = "image/jpeg";
+      }
+
       const relUrl = `/uploads/${fileName}`;
 
       const size = (() => {
-        try { return fs.statSync(f.filepath).size; } catch { return f.size || 0; }
+        try { return fs.statSync(filePath).size; } catch { return f.size || 0; }
       })();
 
       const upload = await prisma.upload.create({
@@ -48,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           filename: fileName,
           url: relUrl,
           size: Number(size || 0),
-          mimetype: (f.mimetype as string) || "application/octet-stream",
+          mimetype,
         },
       });
 

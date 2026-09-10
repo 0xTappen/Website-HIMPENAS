@@ -7,6 +7,7 @@ import { ArrowLeft, UploadCloud, Loader2, Image as ImageIcon, Eye, Save, AlertCi
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "sonner";
 import Link from "next/link";
+import { acceptedImageMessage, isAcceptedImageFile } from "@/lib/imageUpload";
 
 const EditSlidePage = () => {
   const router = useRouter();
@@ -46,11 +47,10 @@ const EditSlidePage = () => {
   const handleFile = (selected: File | null | undefined) => {
     if (selected) {
       // Validasi file
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       const maxSize = 5 * 1024 * 1024; // 5MB
 
-      if (!validTypes.includes(selected.type)) {
-        toast.error("Format file tidak didukung. Gunakan JPG, PNG, atau WebP");
+      if (!isAcceptedImageFile(selected)) {
+        toast.error(`Format file tidak didukung. ${acceptedImageMessage}`);
         return;
       }
 
@@ -253,7 +253,7 @@ const EditSlidePage = () => {
               <div>
                 <h4 className="font-semibold text-blue-900">Tips</h4>
                 <p className="mt-1 text-sm text-blue-700">
-                  Gunakan gambar dengan rasio 16:9 untuk hasil terbaik. Format yang didukung: JPG, PNG, WebP (maksimal 5MB).
+                  Gunakan gambar dengan rasio 16:9 untuk hasil terbaik. Format yang didukung: JPG, PNG, WebP, HEIC, HEIF (maksimal 5MB).
                 </p>
               </div>
             </div>
@@ -329,7 +329,7 @@ const EditSlidePage = () => {
                   {isDragging ? 'Lepaskan file di sini' : 'Klik atau drag & drop'}
                 </p>
                 <p className="mt-2 text-sm text-gray-500">
-                  JPG, PNG, WebP (Max 5MB)
+                  JPG, PNG, WebP, HEIC, HEIF (Max 5MB)
                 </p>
                 <input
                   id="file-upload"

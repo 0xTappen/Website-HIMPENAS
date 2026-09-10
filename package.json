@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -20,6 +21,7 @@
     "formidable": "^3.5.4",
     "framer-motion": "^12.23.22",
     "fs": "^0.0.1-security",
+    "heic-convert": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.545.0",
     "next": "^16.1.1",
@@ -36,6 +38,9 @@
     "recharts": "^3.2.1",
     "sonner": "^2.0.7",
     "swiper": "^11.1.4"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",

@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import "react-quill-new/dist/quill.snow.css";
 import type ReactQuillType from "react-quill-new";
 import dynamic from "next/dynamic";
+import { acceptedImageMessage, isAcceptedImageFile } from "@/lib/imageUpload";
 
 const ReactQuill = dynamic(
   async () => {
@@ -88,11 +89,10 @@ export default function AboutPage() {
           const file = input.files[0];
 
           // Validate file
-          const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
           const maxSize = 5 * 1024 * 1024; // 5MB
 
-          if (!validTypes.includes(file.type)) {
-            toast.error("Format file tidak didukung. Gunakan JPG, PNG, atau WebP");
+          if (!isAcceptedImageFile(file)) {
+            toast.error(`Format file tidak didukung. ${acceptedImageMessage}`);
             return;
           }
 

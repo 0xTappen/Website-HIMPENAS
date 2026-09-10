@@ -4,14 +4,13 @@ import AdminLayout from "../_layout";
 import { Toaster, toast } from "sonner";
 import { ImagePlus, Loader2, Save, Users } from "lucide-react";
 import { organizationFallbackImage, organizationSlots } from "@/lib/organization";
+import { acceptedImageMessage, imageAccept, isAcceptedImageFile } from "@/lib/imageUpload";
 
 type MemberForm = {
   position: string;
   name: string;
   imageUrl: string;
 };
-
-const imageTypes = ["image/jpeg", "image/png", "image/webp"];
 
 export default function OrganizationStructurePage() {
   const [members, setMembers] = useState<MemberForm[]>([]);
@@ -55,8 +54,8 @@ export default function OrganizationStructurePage() {
 
   const uploadPhoto = async (position: string, file?: File) => {
     if (!file) return;
-    if (!imageTypes.includes(file.type)) {
-      toast.error("Gunakan foto berformat JPG, PNG, atau WebP");
+    if (!isAcceptedImageFile(file)) {
+      toast.error(acceptedImageMessage);
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -129,7 +128,7 @@ export default function OrganizationStructurePage() {
             {uploading === position ? "Mengunggah..." : "Upload foto"}
             <input
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept={imageAccept}
               className="sr-only"
               disabled={uploading !== null}
               onChange={(event) => uploadPhoto(position, event.target.files?.[0])}

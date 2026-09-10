@@ -6,6 +6,7 @@ import { Plus, Trash2, X, Image as ImageIcon, Camera, Loader2, Folder, Upload, C
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "sonner";
+import { acceptedImageMessage, isAcceptedImageFile } from "@/lib/imageUpload";
 
 interface Album {
   id: number;
@@ -203,11 +204,10 @@ export default function GaleriAdmin() {
     if (!file) return;
 
     // Validate
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     const maxSize = 5 * 1024 * 1024;
 
-    if (!validTypes.includes(file.type)) {
-      toast.error("Format tidak didukung. Gunakan JPG, PNG, atau WebP");
+    if (!isAcceptedImageFile(file)) {
+      toast.error(`Format tidak didukung. ${acceptedImageMessage}`);
       return;
     }
 
@@ -524,7 +524,7 @@ export default function GaleriAdmin() {
                         <Upload size={32} className="text-emerald-600" />
                       </div>
                       <p className="mt-4 font-semibold text-gray-700">Upload Gambar Cover</p>
-                      <p className="mt-2 text-sm text-gray-500">JPG, PNG, WebP (Max 5MB)</p>
+                      <p className="mt-2 text-sm text-gray-500">JPG, PNG, WebP, HEIC, HEIF (Max 5MB)</p>
                       <input
                         type="file"
                         required

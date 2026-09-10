@@ -3,8 +3,7 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useState } from "react";
 import "quill/dist/quill.snow.css";
 import { Toaster } from "react-hot-toast";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -18,7 +17,6 @@ import "swiper/css/effect-fade";
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
-  const router = useRouter();
 
   // Handle initial load
   const handleLoadingComplete = () => {
@@ -27,31 +25,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       setShowContent(true);
     }, 100);
   };
-
-  // Handle route changes
-  useEffect(() => {
-    const handleRouteChangeStart = () => {
-      setIsLoading(true);
-      setShowContent(false);
-    };
-
-    const handleRouteChangeComplete = () => {
-      // Small delay to show loading screen
-      setTimeout(() => {
-        handleLoadingComplete();
-      }, 100);
-    };
-
-    router.events.on('routeChangeStart', handleRouteChangeStart);
-    router.events.on('routeChangeComplete', handleRouteChangeComplete);
-    router.events.on('routeChangeError', handleRouteChangeComplete);
-
-    return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart);
-      router.events.off('routeChangeComplete', handleRouteChangeComplete);
-      router.events.off('routeChangeError', handleRouteChangeComplete);
-    };
-  }, [router]);
 
   return (
     <SessionProvider session={session}>

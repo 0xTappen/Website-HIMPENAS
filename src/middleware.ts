@@ -9,10 +9,16 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/admin")) {
+  const isAdminPage = pathname.startsWith("/admin");
+  const isAdminApi = pathname.startsWith("/api/admin");
+
+  if (isAdminPage || isAdminApi) {
     const token = req.cookies.get("token")?.value;
 
     if (!token) {
+      if (isAdminApi) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
       const url = req.nextUrl.clone();
       url.pathname = "/admin/login";
       return NextResponse.redirect(url);
@@ -22,6 +28,9 @@ export async function middleware(req: NextRequest) {
       await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
       return NextResponse.next();
     } catch (err) {
+      if (isAdminApi) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
       const url = req.nextUrl.clone();
       url.pathname = "/admin/login";
       return NextResponse.redirect(url);
@@ -34,6 +43,6 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/admin/:path*",
-    "/api/:path*",
+    "/api/admin/:path*",
   ],
 };

@@ -7,6 +7,7 @@ import { ArrowLeft, UploadCloud, Loader2, Image as ImageIcon, X, Eye, CheckCircl
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "sonner";
 import Link from "next/link";
+import { acceptedImageMessage, isAcceptedImageFile } from "@/lib/imageUpload";
 
 const TambahSlidePage = () => {
   const [title, setTitle] = useState("");
@@ -21,11 +22,10 @@ const TambahSlidePage = () => {
   const handleFile = (selectedFile: File | null | undefined) => {
     if (selectedFile) {
       // Validasi file
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       const maxSize = 5 * 1024 * 1024; // 5MB
 
-      if (!validTypes.includes(selectedFile.type)) {
-        toast.error("Format file tidak didukung. Gunakan JPG, PNG, atau WebP");
+      if (!isAcceptedImageFile(selectedFile)) {
+        toast.error(`Format file tidak didukung. ${acceptedImageMessage}`);
         return;
       }
 
@@ -224,7 +224,7 @@ const TambahSlidePage = () => {
                 <h4 className="font-semibold text-blue-900">Tips</h4>
                 <ul className="mt-2 space-y-1 text-sm text-blue-700">
                   <li>• Gunakan gambar dengan rasio 16:9 untuk hasil terbaik</li>
-                  <li>• Format yang didukung: JPG, PNG, WebP</li>
+                  <li>• Format yang didukung: JPG, PNG, WebP, HEIC, HEIF</li>
                   <li>• Ukuran maksimal: 5MB</li>
                   <li>• Resolusi minimum: 1920x1080px</li>
                 </ul>
@@ -322,7 +322,7 @@ const TambahSlidePage = () => {
                     {isDragging ? 'Lepaskan file di sini' : 'Drag & drop atau klik untuk upload'}
                   </p>
                   <p className="mt-2 text-sm text-gray-500">
-                    JPG, PNG, WebP (Max 5MB)
+                    JPG, PNG, WebP, HEIC, HEIF (Max 5MB)
                   </p>
                   <p className="mt-1 text-xs text-gray-400">
                     Minimal 1920x1080px

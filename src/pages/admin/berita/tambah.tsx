@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "sonner";
 import "react-quill-new/dist/quill.snow.css";
 import type ReactQuillType from "react-quill-new";
+import { acceptedImageMessage, isAcceptedImageFile } from "@/lib/imageUpload";
 
 const ReactQuill = dynamic(
   async () => {
@@ -66,11 +67,10 @@ export default function TambahBerita() {
           const file = input.files[0];
 
           // Validate file
-          const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
           const maxSize = 5 * 1024 * 1024; // 5MB
 
-          if (!validTypes.includes(file.type)) {
-            toast.error("Format file tidak didukung. Gunakan JPG, PNG, atau WebP");
+          if (!isAcceptedImageFile(file)) {
+            toast.error(`Format file tidak didukung. ${acceptedImageMessage}`);
             return;
           }
 
@@ -128,11 +128,10 @@ export default function TambahBerita() {
     if (!file) return;
 
     // Validate file
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
-    if (!validTypes.includes(file.type)) {
-      toast.error("Format file tidak didukung. Gunakan JPG, PNG, atau WebP");
+    if (!isAcceptedImageFile(file)) {
+      toast.error(`Format file tidak didukung. ${acceptedImageMessage}`);
       return;
     }
 
@@ -401,7 +400,7 @@ export default function TambahBerita() {
                     <Upload size={32} className="text-emerald-600" />
                   </div>
                   <p className="mt-4 font-semibold text-gray-700">Upload Gambar</p>
-                  <p className="mt-2 text-sm text-gray-500">JPG, PNG, WebP (Max 5MB)</p>
+                  <p className="mt-2 text-sm text-gray-500">JPG, PNG, WebP, HEIC, HEIF (Max 5MB)</p>
                   <input
                     id="file-upload"
                     type="file"
