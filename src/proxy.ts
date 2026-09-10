@@ -6,8 +6,9 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isAdminPage = pathname.startsWith("/admin");
   const isAdminApi = pathname.startsWith("/api/admin");
+  const isLoginPage = pathname === "/admin/login";
 
-  if (!isAdminPage && !isAdminApi) {
+  if (isLoginPage || (!isAdminPage && !isAdminApi)) {
     return NextResponse.next();
   }
 
