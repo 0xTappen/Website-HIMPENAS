@@ -11,11 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "PUT") {
       const { konten } = req.body;
+      if (typeof konten !== "string" || !konten.trim() || konten.length > 5000) {
+        return res.status(400).json({ message: "Konten misi tidak valid" });
+      }
 
       const misi = await prisma.misi.upsert({
         where: { id: 1 },
-        update: { konten },
-        create: { konten },
+        update: { konten: konten.trim() },
+        create: { konten: konten.trim() },
       });
 
       return res.status(200).json(misi);

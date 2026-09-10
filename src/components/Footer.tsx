@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, MapPin, Phone, Facebook, Instagram, Twitter, Youtube, ChevronRight, Heart } from 'lucide-react';
+import { Mail, MapPin, Instagram, ChevronRight } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -56,25 +56,12 @@ const Footer: React.FC = () => {
               Himpunan Pengolahan Sawit - Wadah kreativitas dan inovasi mahasiswa untuk masa depan yang lebih baik.
             </p>
             
-            {/* Achievement Highlights */}
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              <div className="bg-gray-800/50 rounded-xl p-4 text-center hover:bg-emerald-himp/10 transition-all duration-300 group border border-gray-800 hover:border-emerald-himp/30">
-                <div className="text-2xl font-bold text-emerald-400 mb-1 group-hover:scale-110 transition-transform">
+            <div className="mt-6">
+              <div className="inline-block border border-gray-800 bg-gray-800/50 px-5 py-3 text-center">
+                <div className="text-2xl font-bold text-emerald-400">
                   500+
                 </div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Anggota</div>
-              </div>
-              <div className="bg-gray-800/50 rounded-xl p-4 text-center hover:bg-emerald-himp/10 transition-all duration-300 group border border-gray-800 hover:border-emerald-himp/30">
-                <div className="text-2xl font-bold text-emerald-400 mb-1 group-hover:scale-110 transition-transform">
-                  50+
-                </div>
-                <div className="text-xs text-gray-500 uppercase tracking-wide">Event</div>
-              </div>
-              <div className="bg-gray-800/50 rounded-xl p-4 text-center hover:bg-emerald-himp/10 transition-all duration-300 group border border-gray-800 hover:border-emerald-himp/30">
-                <div className="text-2xl font-bold text-emerald-400 mb-1 group-hover:scale-110 transition-transform">
-                  10+
-                </div>
-                <div className="text-xs text-gray-500 uppercase tracking-wide">Prestasi</div>
               </div>
             </div>
 

@@ -13,7 +13,6 @@ import { motion } from "framer-motion";
 import AlumniListCards from "@/components/AlumniListCards"; // <<< DITAMBAHKAN
 import {
   Users,
-  Award,
   Target,
   Mail,
   Sparkles,
@@ -37,6 +36,7 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, 
   const savedMembers = new Map(members.map((member) => [member.position, member]));
   const savedDepartments = new Map(departments.map((department) => [department.name, department]));
   const period = setting?.period || "2024/2025";
+  const memberCount = setting?.memberCount ?? 500;
   const getMember = (position: string) => {
     const slot = organizationSlots.find((item) => item.position === position);
     const member = savedMembers.get(position);
@@ -178,7 +178,7 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, 
                   </div>
                   <div className="text-left">
                     <div className="text-3xl md:text-4xl font-bold text-white">
-                      500+
+                      {memberCount}+
                     </div>
                     <div className="text-sm text-white/80 font-medium">
                       Anggota Aktif
@@ -187,21 +187,6 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, 
                 </div>
               </div>
 
-              <div className="group bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 shadow-xl">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-3xl md:text-4xl font-bold text-white">
-                      50+
-                    </div>
-                    <div className="text-sm text-white/80 font-medium">
-                      Event Sukses
-                    </div>
-                  </div>
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -304,25 +289,13 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, 
                 />
 
                 {/* Mini Stats */}
-                <div className="grid grid-cols-3 gap-4 mt-10">
+                <div className="grid grid-cols-2 gap-4 mt-10">
                   <motion.div
                     whileHover={{ y: -4 }}
                     className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-5 text-center hover:shadow-lg transition-all duration-300 cursor-pointer"
                   >
                     <div className="text-3xl md:text-4xl font-bold text-emerald-dark mb-1">
-                      10+
-                    </div>
-                    <div className="text-xs text-gray-700 font-medium uppercase tracking-wide">
-                      Prestasi
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ y: -4 }}
-                    className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-5 text-center hover:shadow-lg transition-all duration-300 cursor-pointer"
-                  >
-                    <div className="text-3xl md:text-4xl font-bold text-emerald-dark mb-1">
-                      5
+                      {departmentCards.length}
                     </div>
                     <div className="text-xs text-gray-700 font-medium uppercase tracking-wide">
                       Departemen
@@ -334,7 +307,7 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, 
                     className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-5 text-center hover:shadow-lg transition-all duration-300 cursor-pointer"
                   >
                     <div className="text-3xl md:text-4xl font-bold text-emerald-dark mb-1">
-                      80+
+                      {departmentCards.reduce((total, department) => total + department.staffCount, 0)}+
                     </div>
                     <div className="text-xs text-gray-700 font-medium uppercase tracking-wide">
                       Pengurus

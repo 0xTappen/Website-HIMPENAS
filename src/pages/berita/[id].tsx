@@ -34,6 +34,8 @@ const BeritaDetailPage: NextPage<BeritaDetailPageProps> = ({
     "id-ID",
     { day: "numeric", month: "long", year: "numeric" }
   );
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const canonicalUrl = `${siteUrl}/berita/${berita.id}`;
 
   const getTimeAgo = (date: Date) => {
     const now = new Date();
@@ -66,6 +68,10 @@ const BeritaDetailPage: NextPage<BeritaDetailPageProps> = ({
     }
     return html.replace(/<[^>]+>/g, '');
   };
+  const metaDescription = cleanHtmlForMeta(berita.konten).replace(/\s+/g, " ").trim().substring(0, 155);
+  const socialImage = berita.gambarUrl
+    ? (berita.gambarUrl.startsWith("http") ? berita.gambarUrl : `${siteUrl}${berita.gambarUrl}`)
+    : `${siteUrl}/logo/logo.png`;
 
   const handleShare = () => {
     if (navigator.share) {
@@ -82,7 +88,19 @@ const BeritaDetailPage: NextPage<BeritaDetailPageProps> = ({
     <>
       <Head>
         <title>{`${berita.judul} - HIMPENAS`}</title>
-        <meta name="description" content={cleanHtmlForMeta(berita.konten).substring(0, 155)} />
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="HIMPENAS" />
+        <meta property="og:title" content={berita.judul} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={socialImage} />
+        <meta property="article:published_time" content={new Date(berita.createdAt).toISOString()} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={berita.judul} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={socialImage} />
       </Head>
 
       {/* Progress Bar */}

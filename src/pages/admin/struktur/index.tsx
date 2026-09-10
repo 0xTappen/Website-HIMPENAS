@@ -19,12 +19,14 @@ type DepartmentForm = {
 
 type SettingForm = {
   period: string;
+  memberCount: number;
 };
 
 export default function OrganizationStructurePage() {
   const [members, setMembers] = useState<MemberForm[]>([]);
   const [departments, setDepartments] = useState<DepartmentForm[]>([]);
   const [period, setPeriod] = useState("2024/2025");
+  const [memberCount, setMemberCount] = useState(500);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -58,6 +60,7 @@ export default function OrganizationStructurePage() {
           }))
         );
         setPeriod(saved.setting?.period || "2024/2025");
+        setMemberCount(saved.setting?.memberCount ?? 500);
       })
       .catch(() => toast.error("Gagal memuat struktur organisasi"))
       .finally(() => setLoading(false));
@@ -122,7 +125,7 @@ export default function OrganizationStructurePage() {
       const response = await fetch("/api/admin/struktur", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ members, departments, setting: { period } }),
+        body: JSON.stringify({ members, departments, setting: { period, memberCount } }),
       });
       if (!response.ok) throw new Error();
       toast.success("Struktur organisasi berhasil disimpan");
@@ -197,6 +200,16 @@ export default function OrganizationStructurePage() {
                 onChange={(event) => setPeriod(event.target.value)}
                 maxLength={50}
                 placeholder="Contoh: 2025/2026"
+                className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              />
+            </label>
+            <label className="mt-4 block max-w-sm text-sm font-medium text-gray-700">
+              Total Anggota Aktif
+              <input
+                type="number"
+                min="0"
+                value={memberCount}
+                onChange={(event) => setMemberCount(Math.max(0, Number(event.target.value) || 0))}
                 className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
               />
             </label>

@@ -13,12 +13,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "PUT") {
       const { konten } = req.body;
+      if (typeof konten !== "string" || !konten.trim() || konten.length > 5000) {
+        return res.status(400).json({ message: "Konten visi tidak valid" });
+      }
       let visi = await prisma.visi.findFirst();
 
       if (!visi) {
-        visi = await prisma.visi.create({ data: { konten } });
+        visi = await prisma.visi.create({ data: { konten: konten.trim() } });
       } else {
-        visi = await prisma.visi.update({ where: { id: visi.id }, data: { konten } });
+        visi = await prisma.visi.update({ where: { id: visi.id }, data: { konten: konten.trim() } });
       }
 
       return res.status(200).json(visi);

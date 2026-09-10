@@ -3,17 +3,20 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../_layout";
 import { Toaster, toast } from "sonner";
-import { Save, Loader2, Goal, Flag, AlertCircle, CheckCircle2, Sparkles } from "lucide-react";
+import { Save, Loader2, Goal, Flag, AlertCircle, CheckCircle2, Sparkles, Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminVisiMisiPage() {
   const [visi, setVisi] = useState("");
-  const [misi, setMisi] = useState("");
+  const [misiPoints, setMisiPoints] = useState<string[]>([""]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingVisi, setIsSavingVisi] = useState(false);
   const [isSavingMisi, setIsSavingMisi] = useState(false);
   const [visiCharCount, setVisiCharCount] = useState(0);
-  const [misiCharCount, setMisiCharCount] = useState(0);
+  const misi = misiPoints
+    .map((point, index) => `${index + 1}. ${point.trim()}`)
+    .filter((point) => !point.endsWith(". "))
+    .join("\n");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +29,11 @@ export default function AdminVisiMisiPage() {
         const visiData = await visiRes.json();
         const misiData = await misiRes.json();
         setVisi(visiData.konten || "");
-        setMisi(misiData.konten || "");
+        const points = (misiData.konten || "")
+          .split(/\r?\n/)
+          .map((point: string) => point.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim())
+          .filter(Boolean);
+        setMisiPoints(points.length > 0 ? points : [""]);
       } catch {
         toast.error("Gagal memuat data Visi & Misi!");
       } finally {
@@ -40,9 +47,13 @@ export default function AdminVisiMisiPage() {
     setVisiCharCount(visi.length);
   }, [visi]);
 
-  useEffect(() => {
-    setMisiCharCount(misi.length);
-  }, [misi]);
+  const updateMisiPoint = (index: number, value: string) => {
+    setMisiPoints((points) => points.map((point, pointIndex) => pointIndex === index ? value : point));
+  };
+
+  const removeMisiPoint = (index: number) => {
+    setMisiPoints((points) => points.length === 1 ? [""] : points.filter((_, pointIndex) => pointIndex !== index));
+  };
 
   const handleSave = async (type: 'visi' | 'misi') => {
     const content = type === 'visi' ? visi : misi;
@@ -243,21 +254,28 @@ Menjadi organisasi mahasiswa yang unggul, inovatif, dan berdaya saing dalam meng
             </div>
 
             <div className="p-6 space-y-4">
-              <textarea
-                value={misi}
-                onChange={(e) => setMisi(e.target.value)}
-                rows={10}
-                className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3.5 text-gray-900 transition-all focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/10"
-                placeholder="Tuliskan poin-poin misi organisasi di sini...
-
-Contoh:
-• Menyelenggarakan kegiatan akademik yang berkualitas
-• Mengembangkan soft skill mahasiswa
-• Membangun kolaborasi dengan berbagai pihak
-• Menciptakan lingkungan yang kondusif"
-              />
+              <div className="space-y-3">
+                {misiPoints.map((point, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-sm font-bold text-emerald-700">{index + 1}</span>
+                    <textarea
+                      value={point}
+                      onChange={(event) => updateMisiPoint(index, event.target.value)}
+                      rows={2}
+                      className="min-h-10 w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                      placeholder="Tuliskan satu poin misi"
+                    />
+                    <button type="button" onClick={() => removeMisiPoint(index)} aria-label={`Hapus poin misi ${index + 1}`} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-red-600 hover:bg-red-50">
+                      <Trash2 size={17} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={() => setMisiPoints((points) => [...points, ""])} className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800">
+                <Plus size={16} /> Tambah poin misi
+              </button>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">{misiCharCount} karakter</span>
+                <span className="text-gray-500">{misiPoints.filter((point) => point.trim()).length} poin</span>
                 {misi.trim() && (
                   <span className="flex items-center gap-1 text-green-600">
                     <CheckCircle2 size={14} />

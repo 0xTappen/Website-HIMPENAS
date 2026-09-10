@@ -15,6 +15,7 @@ type DepartmentInput = {
 
 type SettingInput = {
   period: string;
+  memberCount: number;
 };
 
 const allowedPositions = new Set(organizationSlots.map((slot) => slot.position));
@@ -43,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         setting?: SettingInput;
       };
 
-      if (!Array.isArray(members) || !Array.isArray(departments) || !setting?.period?.trim()) {
+      if (!Array.isArray(members) || !Array.isArray(departments) || !setting?.period?.trim() || !Number.isInteger(setting.memberCount) || setting.memberCount < 0) {
         return res.status(400).json({ message: "Data struktur tidak valid" });
       }
 
@@ -105,8 +106,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ),
           prisma.organizationSetting.upsert({
             where: { id: 1 },
-            create: { id: 1, period: setting.period.trim() },
-            update: { period: setting.period.trim() },
+            create: { id: 1, period: setting.period.trim(), memberCount: setting.memberCount },
+            update: { period: setting.period.trim(), memberCount: setting.memberCount },
           }),
         ]
       );

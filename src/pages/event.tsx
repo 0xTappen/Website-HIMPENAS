@@ -5,16 +5,18 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import EventCard from '@/components/EventCard';
 import Image from 'next/image';
+import Head from 'next/head';
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Sparkles, Archive, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Sparkles, Archive, ArrowRight, Search } from 'lucide-react';
 
 interface EventPageProps {
   upcomingEvents: Event[];
   pastEvents: Event[];
+  currentSearch: string;
 }
 
-const EventPage: NextPage<EventPageProps> = ({ upcomingEvents, pastEvents }) => {
+const EventPage: NextPage<EventPageProps> = ({ upcomingEvents, pastEvents, currentSearch }) => {
   const headerRef = useRef<HTMLElement>(null);
   const [headerInView, setHeaderInView] = useState(false);
 
@@ -52,6 +54,10 @@ const EventPage: NextPage<EventPageProps> = ({ upcomingEvents, pastEvents }) => 
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
+      <Head>
+        <title>Event HIMPENAS</title>
+        <meta name="description" content="Agenda dan arsip kegiatan HIMPENAS." />
+      </Head>
       <Navbar />
       
       {/* Premium Header */}
@@ -181,6 +187,15 @@ const EventPage: NextPage<EventPageProps> = ({ upcomingEvents, pastEvents }) => 
 
       {/* Main Content */}
       <main className="flex-grow bg-gray-50">
+        <section className="border-b border-gray-200 bg-white py-6">
+          <form action="/event" method="get" className="mx-auto flex w-full max-w-3xl gap-2 px-4 sm:px-6">
+            <label className="sr-only" htmlFor="event-search">Cari event</label>
+            <input id="event-search" name="search" defaultValue={currentSearch} placeholder="Cari acara berdasarkan judul atau lokasi" className="min-w-0 flex-1 border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100" />
+            <button type="submit" aria-label="Cari event" className="inline-flex h-12 w-12 shrink-0 items-center justify-center bg-emerald-700 text-white hover:bg-emerald-800">
+              <Search size={20} />
+            </button>
+          </form>
+        </section>
         {/* Upcoming Events */}
         <section className="py-16 md:py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 md:px-8">
@@ -350,9 +365,20 @@ const EventPage: NextPage<EventPageProps> = ({ upcomingEvents, pastEvents }) => 
 
 export default EventPage;
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const now = new Date();
+  const search = Array.isArray(context.query.search) ? context.query.search[0] : context.query.search;
+  const where = search?.trim()
+    ? {
+        OR: [
+          { judul: { contains: search.trim(), mode: 'insensitive' as const } },
+          { deskripsi: { contains: search.trim(), mode: 'insensitive' as const } },
+          { lokasi: { contains: search.trim(), mode: 'insensitive' as const } },
+        ],
+      }
+    : undefined;
   const allEvents = await prisma.event.findMany({
+    where,
     orderBy: { tanggal: 'desc' },
   });
   const upcomingEvents = allEvents
@@ -363,6 +389,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     props: {
       upcomingEvents: JSON.parse(JSON.stringify(upcomingEvents)),
       pastEvents: JSON.parse(JSON.stringify(pastEvents)),
+      currentSearch: search || "",
     },
   };
 };

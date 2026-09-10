@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useInView } from "react-intersection-observer";
-import { ArrowRight, Users, Award, Zap, Sparkles } from "lucide-react";
+import { ArrowRight, Users, Zap, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface AboutUsSectionProps {
@@ -85,17 +85,6 @@ const AboutUsSection: React.FC<AboutUsSectionProps> = ({ data }) => {
               </div>
             </div>
 
-            <div className="absolute -top-8 right-8 bg-white rounded-2xl shadow-xl p-4 transform group-hover:-translate-y-2 transition-transform duration-500 delay-75">
-              <div className="flex items-center gap-3">
-                <div className="bg-emerald-50 p-3 rounded-xl">
-                  <Award className="w-6 h-6 text-emerald-dark" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">10+</div>
-                  <div className="text-xs text-gray-600">Prestasi</div>
-                </div>
-              </div>
-            </div>
           </motion.div>
 
           {/* Content Section */}

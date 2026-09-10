@@ -98,12 +98,10 @@ const WelcomeSection: React.FC = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 30 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="grid grid-cols-3 gap-4 max-w-3xl mx-auto mt-12"
+          className="grid max-w-xs grid-cols-1 gap-4 mx-auto mt-12"
         >
           {[
             { number: '500+', label: 'Anggota', icon: '👥' },
-            { number: '10+', label: 'Prestasi', icon: '🏆' },
-            { number: '50+', label: 'Event', icon: '📅' },
           ].map((stat, index) => (
             <div
               key={index}

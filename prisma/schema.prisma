@@ -166,8 +166,9 @@ model OrganizationDepartment {
 }
 
 model OrganizationSetting {
-  id        Int      @id @default(1)
-  period    String   @default("2024/2025")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(1)
+  period      String   @default("2024/2025")
+  memberCount Int      @default(500)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
-import { Target, CheckCircle2, Sparkles, TrendingUp, Eye, ListChecks } from "lucide-react";
+import { Target, CheckCircle2, Sparkles, TrendingUp, Eye, ListChecks, Instagram } from "lucide-react";
 
 interface VisiMisiPageProps {
   visi: Visi | null;
@@ -281,12 +281,15 @@ const VisiMisiPage: NextPage<VisiMisiPageProps> = ({ visi, misi }) => {
               <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                 Bergabunglah dengan kami untuk mewujudkan visi dan misi HIMPENAS dalam memajukan organisasi dan mengembangkan potensi mahasiswa
               </p>
-              <button
+              <a
+                href="https://www.instagram.com/himpenas_itsb/"
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex items-center gap-3 bg-white text-emerald-himp px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
               >
                 <span>Hubungi Kami</span>
-                <TrendingUp className="w-5 h-5" />
-              </button>
+                <Instagram className="w-5 h-5" />
+              </a>
             </div>
           </div>
         </section>
