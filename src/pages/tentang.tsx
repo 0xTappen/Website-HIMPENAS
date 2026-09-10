@@ -1,6 +1,7 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { About } from "@prisma/client";
+import { About, OrganizationMember } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { organizationFallbackImage, organizationSlots } from "@/lib/organization";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
@@ -25,11 +26,39 @@ import {
 
 interface TentangPageProps {
   about: About | null;
+  members: OrganizationMember[];
 }
 
-const TentangPage: NextPage<TentangPageProps> = ({ about }) => {
+const TentangPage: NextPage<TentangPageProps> = ({ about, members }) => {
   const headerRef = useRef<HTMLElement>(null);
   const [headerInView, setHeaderInView] = useState(false);
+  const savedMembers = new Map(members.map((member) => [member.position, member]));
+  const getMember = (position: string) => {
+    const slot = organizationSlots.find((item) => item.position === position);
+    const member = savedMembers.get(position);
+    return {
+      name: member?.name || slot?.defaultName || "Belum diisi",
+      imageUrl: member?.imageUrl || organizationFallbackImage,
+    };
+  };
+  const leadership = organizationSlots
+    .filter((slot) => slot.section === "leadership")
+    .map((slot) => ({ ...slot, ...getMember(slot.position) }));
+  const executive = organizationSlots
+    .filter((slot) => slot.section === "executive")
+    .map((slot) => ({ ...slot, ...getMember(slot.position) }));
+  const departments = Array.from(
+    new Set(organizationSlots.filter((slot) => slot.section === "department").map((slot) => slot.department))
+  ).map((department) => {
+    const slots = organizationSlots.filter((slot) => slot.department === department);
+    return {
+      title: department || "Departemen",
+      staffCount: slots[0]?.staffCount || 0,
+      ketua: getMember(slots.find((slot) => slot.role === "Ketua")!.position),
+      wakil: getMember(slots.find((slot) => slot.role === "Wakil")!.position),
+      sekretaris: getMember(slots.find((slot) => slot.role === "Sekretaris")!.position),
+    };
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -43,7 +72,7 @@ const TentangPage: NextPage<TentangPageProps> = ({ about }) => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-gradient-to-b from-gray-50 to-white">
       <Navbar />
 
       {/* Premium Header */}
@@ -352,14 +381,14 @@ const TentangPage: NextPage<TentangPageProps> = ({ about }) => {
                 className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center w-full max-w-4xl"
               >
                 <TeamCard
-                  imageUrl="/struktur/ketua.jpg"
-                  name="Nathanael J Munthe"
-                  role="Ketua Himpunan"
+                  imageUrl={leadership[0].imageUrl}
+                  name={leadership[0].name}
+                  role={leadership[0].role}
                 />
                 <TeamCard
-                  imageUrl="/struktur/wakil.jpg"
-                  name="Atha F. Sitorus"
-                  role="Wakil Ketua Himpunan"
+                  imageUrl={leadership[1].imageUrl}
+                  name={leadership[1].name}
+                  role={leadership[1].role}
                 />
               </motion.div>
 
@@ -372,19 +401,19 @@ const TentangPage: NextPage<TentangPageProps> = ({ about }) => {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center w-full max-w-5xl"
               >
                 <TeamCard
-                  imageUrl="/struktur/sekre.jpg"
-                  name="Nama Sekum"
-                  role="Sekretaris Umum"
+                  imageUrl={executive[0].imageUrl}
+                  name={executive[0].name}
+                  role={executive[0].role}
                 />
                 <TeamCard
-                  imageUrl="/struktur/bendum1.jpg"
-                  name="Nama Bendum 1"
-                  role="Bendahara Umum 1"
+                  imageUrl={executive[1].imageUrl}
+                  name={executive[1].name}
+                  role={executive[1].role}
                 />
                 <TeamCard
-                  imageUrl="/struktur/bendum2.jpg"
-                  name="Nama Bendum 2"
-                  role="Bendahara Umum 2"
+                  imageUrl={executive[2].imageUrl}
+                  name={executive[2].name}
+                  role={executive[2].role}
                 />
               </motion.div>
 
@@ -412,101 +441,9 @@ const TentangPage: NextPage<TentangPageProps> = ({ about }) => {
                     md:gap-8 hide-scrollbar
                   "
                 >
-                  <DepartmentCard
-                    title="Departemen Internal"
-                    staffCount={18}
-                    ketua={{
-                      name: "Nama Ketua Internal",
-                      imageUrl:
-                        "/struktur/departemen/internal/foto1.jpg",
-                    }}
-                    wakil={{
-                      name: "Nama Wakil Internal",
-                      imageUrl:
-                        "/struktur/departemen/internal/foto2.jpg",
-                    }}
-                    sekretaris={{
-                      name: "Nama Sekretaris Internal",
-                      imageUrl:
-                        "/struktur/departemen/internal/foto3.jpg",
-                    }}
-                  />
-                  <DepartmentCard
-                    title="Departemen Eksternal"
-                    staffCount={20}
-                    ketua={{
-                      name: "Nama Ketua Eksternал",
-                      imageUrl:
-                        "/struktur/departemen/eksternal/foto1.jpg",
-                    }}
-                    wakil={{
-                      name: "Nama Wakil Eksternal",
-                      imageUrl:
-                        "/struktur/departemen/eksternal/foto2.jpg",
-                    }}
-                    sekretaris={{
-                      name: "Nama Sekretaris Eksternал",
-                      imageUrl:
-                        "/struktur/departemen/eksternal/foto3.jpg",
-                    }}
-                  />
-                  <DepartmentCard
-                    title="Departemen Akademik"
-                    staffCount={14}
-                    ketua={{
-                      name: "Nama Ketua Akademik",
-                      imageUrl:
-                        "/struktur/departemen/akademik/foto1.jpg",
-                    }}
-                    wakil={{
-                      name: "Nama Wakil Akademik",
-                      imageUrl:
-                        "/struktur/departemen/akademik/foto2.jpg",
-                    }}
-                    sekretaris={{
-                      name: "Nama Sekretaris Akademik",
-                      imageUrl:
-                        "/struktur/departemen/akademik/foto3.jpg",
-                    }}
-                  />
-                  <DepartmentCard
-                    title="Departemen PSDM"
-                    staffCount={19}
-                    ketua={{
-                      name: "Nama Ketua PSDM",
-                      imageUrl:
-                        "/struktur/departemen/psdm/foto1.jpg",
-                    }}
-                    wakil={{
-                      name: "Nama Wakil PSDM",
-                      imageUrl:
-                        "/struktur/departemen/psdm/foto2.jpg",
-                    }}
-                    sekretaris={{
-                      name: "Nama Sekretaris PSDM",
-                      imageUrl:
-                        "/struktur/departemen/psdm/foto3.jpg",
-                    }}
-                  />
-                  <DepartmentCard
-                    title="Departemen INFOKOM"
-                    staffCount={9}
-                    ketua={{
-                      name: "Nama Ketua INFOKOM",
-                      imageUrl:
-                        "/struktur/departemen/infokom/foto1.jpg",
-                    }}
-                    wakil={{
-                      name: "Nama Wakil INFOKOM",
-                      imageUrl:
-                        "/struktur/departemen/infokom/foto2.jpg",
-                    }}
-                    sekretaris={{
-                      name: "Nama Sekretaris INFOKOM",
-                      imageUrl:
-                        "/struktur/departemen/infokom/foto3.jpg",
-                    }}
-                  />
+                  {departments.map((department) => (
+                    <DepartmentCard key={department.title} {...department} />
+                  ))}
                 </div>
               </motion.div>
             </div>
@@ -566,8 +503,14 @@ const TentangPage: NextPage<TentangPageProps> = ({ about }) => {
 export default TentangPage;
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const about = await prisma.about.findFirst();
+  const [about, members] = await Promise.all([
+    prisma.about.findFirst(),
+    prisma.organizationMember.findMany(),
+  ]);
   return {
-    props: { about: JSON.parse(JSON.stringify(about)) },
+    props: {
+      about: JSON.parse(JSON.stringify(about)),
+      members: JSON.parse(JSON.stringify(members)),
+    },
   };
 };

@@ -7,7 +7,7 @@ import NextImage from "next/image";
 import {
   LayoutDashboard, Newspaper, Shapes, Calendar,
   LogOut, Presentation, Info, Goal, User, X, Image,
-  ChevronRight, Settings, GraduationCap
+  ChevronRight, Settings, GraduationCap, Users
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -28,6 +28,7 @@ const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
     { name: "Galeri", href: "/admin/galeri", icon: <Image size={20} /> },
     { name: "Visi & Misi", href: "/admin/visimisi", icon: <Goal size={20} /> },
     { name: "Tentang Kami", href: "/admin/about", icon: <Info size={20} /> },
+    { name: "Struktur Organisasi", href: "/admin/struktur", icon: <Users size={20} /> },
   ];
 
   return (

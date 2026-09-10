@@ -148,5 +148,13 @@ model AlumniMember {
   year        AlumniYear   @relation(fields: [yearId], references: [id])
 }
 
+model OrganizationMember {
+  id        Int      @id @default(autoincrement())
+  position  String   @unique
+  name      String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 
