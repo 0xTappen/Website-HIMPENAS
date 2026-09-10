@@ -10,9 +10,10 @@ export type OrganizationSlot = {
 export const organizationSlots: OrganizationSlot[] = [
   { position: "ketua-himpunan", role: "Ketua Himpunan", section: "leadership", defaultName: "Nathanael J Munthe" },
   { position: "wakil-ketua-himpunan", role: "Wakil Ketua Himpunan", section: "leadership", defaultName: "Atha F. Sitorus" },
-  { position: "sekretaris-umum", role: "Sekretaris Umum", section: "executive", defaultName: "Nama Sekum" },
-  { position: "bendahara-umum-1", role: "Bendahara Umum 1", section: "executive", defaultName: "Nama Bendum 1" },
-  { position: "bendahara-umum-2", role: "Bendahara Umum 2", section: "executive", defaultName: "Nama Bendum 2" },
+  { position: "sekretaris-1", role: "Sekretaris 1", section: "executive", defaultName: "Nama Sekretaris 1" },
+  { position: "sekretaris-2", role: "Sekretaris 2", section: "executive", defaultName: "Nama Sekretaris 2" },
+  { position: "bendahara-umum-1", role: "Bendahara 1", section: "executive", defaultName: "Nama Bendahara 1" },
+  { position: "bendahara-umum-2", role: "Bendahara 2", section: "executive", defaultName: "Nama Bendahara 2" },
   { position: "internal-ketua", role: "Ketua", section: "department", department: "Departemen Internal", staffCount: 18, defaultName: "Nama Ketua Internal" },
   { position: "internal-wakil", role: "Wakil", section: "department", department: "Departemen Internal", staffCount: 18, defaultName: "Nama Wakil Internal" },
   { position: "internal-sekretaris", role: "Sekretaris", section: "department", department: "Departemen Internal", staffCount: 18, defaultName: "Nama Sekretaris Internal" },

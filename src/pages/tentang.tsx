@@ -404,7 +404,7 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center w-full max-w-5xl"
+                className="grid w-full max-w-6xl grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-4"
               >
                 <TeamCard
                   imageUrl={executive[0].imageUrl}

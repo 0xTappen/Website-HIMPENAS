@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  turbopack: {
+    root: __dirname,
+  },
   // Transpile packages that have CSS imports or aren't fully ESM compatible
   transpilePackages: ['react-quill'],
   images: {
