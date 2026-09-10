@@ -424,6 +424,12 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, 
                   role={executive[2].role}
                   period={period}
                 />
+                <TeamCard
+                  imageUrl={executive[3].imageUrl}
+                  name={executive[3].name}
+                  role={executive[3].role}
+                  period={period}
+                />
               </motion.div>
 
               {/* Departemen */}

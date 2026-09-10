@@ -221,7 +221,7 @@ export default function OrganizationStructurePage() {
             </section>
             <section>
               <h2 className="mb-4 text-xl font-bold text-gray-900">Sekretaris dan Bendahara</h2>
-              <div className="grid gap-4 lg:grid-cols-4">{executive.map((slot) => renderMemberForm(slot.position))}</div>
+              <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">{executive.map((slot) => renderMemberForm(slot.position))}</div>
             </section>
             {departmentNames.map((department) => (
               <section key={department}>
