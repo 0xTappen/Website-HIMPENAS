@@ -1,5 +1,5 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { About, OrganizationMember } from "@prisma/client";
+import { About, OrganizationDepartment, OrganizationMember, OrganizationSetting } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { organizationFallbackImage, organizationSlots } from "@/lib/organization";
 import Navbar from "@/components/Navbar";
@@ -27,12 +27,16 @@ import {
 interface TentangPageProps {
   about: About | null;
   members: OrganizationMember[];
+  departments: OrganizationDepartment[];
+  setting: OrganizationSetting | null;
 }
 
-const TentangPage: NextPage<TentangPageProps> = ({ about, members }) => {
+const TentangPage: NextPage<TentangPageProps> = ({ about, members, departments, setting }) => {
   const headerRef = useRef<HTMLElement>(null);
   const [headerInView, setHeaderInView] = useState(false);
   const savedMembers = new Map(members.map((member) => [member.position, member]));
+  const savedDepartments = new Map(departments.map((department) => [department.name, department]));
+  const period = setting?.period || "2024/2025";
   const getMember = (position: string) => {
     const slot = organizationSlots.find((item) => item.position === position);
     const member = savedMembers.get(position);
@@ -47,13 +51,13 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members }) => {
   const executive = organizationSlots
     .filter((slot) => slot.section === "executive")
     .map((slot) => ({ ...slot, ...getMember(slot.position) }));
-  const departments = Array.from(
+  const departmentCards = Array.from(
     new Set(organizationSlots.filter((slot) => slot.section === "department").map((slot) => slot.department))
   ).map((department) => {
     const slots = organizationSlots.filter((slot) => slot.department === department);
     return {
       title: department || "Departemen",
-      staffCount: slots[0]?.staffCount || 0,
+      staffCount: savedDepartments.get(department || "")?.staffCount ?? slots[0]?.staffCount ?? 0,
       ketua: getMember(slots.find((slot) => slot.role === "Ketua")!.position),
       wakil: getMember(slots.find((slot) => slot.role === "Wakil")!.position),
       sekretaris: getMember(slots.find((slot) => slot.role === "Sekretaris")!.position),
@@ -384,11 +388,13 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members }) => {
                   imageUrl={leadership[0].imageUrl}
                   name={leadership[0].name}
                   role={leadership[0].role}
+                  period={period}
                 />
                 <TeamCard
                   imageUrl={leadership[1].imageUrl}
                   name={leadership[1].name}
                   role={leadership[1].role}
+                  period={period}
                 />
               </motion.div>
 
@@ -404,16 +410,19 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members }) => {
                   imageUrl={executive[0].imageUrl}
                   name={executive[0].name}
                   role={executive[0].role}
+                  period={period}
                 />
                 <TeamCard
                   imageUrl={executive[1].imageUrl}
                   name={executive[1].name}
                   role={executive[1].role}
+                  period={period}
                 />
                 <TeamCard
                   imageUrl={executive[2].imageUrl}
                   name={executive[2].name}
                   role={executive[2].role}
+                  period={period}
                 />
               </motion.div>
 
@@ -441,7 +450,7 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members }) => {
                     md:gap-8 hide-scrollbar
                   "
                 >
-                  {departments.map((department) => (
+                  {departmentCards.map((department) => (
                     <DepartmentCard key={department.title} {...department} />
                   ))}
                 </div>
@@ -503,14 +512,18 @@ const TentangPage: NextPage<TentangPageProps> = ({ about, members }) => {
 export default TentangPage;
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const [about, members] = await Promise.all([
+  const [about, members, departments, setting] = await Promise.all([
     prisma.about.findFirst(),
     prisma.organizationMember.findMany(),
+    prisma.organizationDepartment.findMany(),
+    prisma.organizationSetting.findUnique({ where: { id: 1 } }),
   ]);
   return {
     props: {
       about: JSON.parse(JSON.stringify(about)),
       members: JSON.parse(JSON.stringify(members)),
+      departments: JSON.parse(JSON.stringify(departments)),
+      setting: JSON.parse(JSON.stringify(setting)),
     },
   };
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Users, Crown, UserCheck, Briefcase } from 'lucide-react';
+import { Users, UserCheck, Briefcase } from 'lucide-react';
 
 interface PersonMini {
   name: string;
@@ -90,27 +90,17 @@ const DepartmentCard: React.FC<DepartmentCardProps> = ({
                     opacity: isHovered ? [0.3, 0.5, 0.3] : 0.2,
                   }}
                   transition={{ duration: 2, repeat: isHovered ? Infinity : 0 }}
-                  className="absolute inset-0 rounded-full bg-gradient-to-tr from-yellow-400 to-amber-500 blur-md -z-10"
+                  className="absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-himp to-emerald-dark blur-md -z-10"
                 ></motion.div>
 
-                <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white shadow-xl bg-gray-100 group-hover:border-yellow-400 transition-colors duration-500">
+                <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white shadow-xl bg-gray-100 group-hover:border-emerald-400 transition-colors duration-500">
                   <Image src={ketua.imageUrl} alt={ketua.name} fill sizes="80px" className="object-cover group-hover:scale-110 transition-transform duration-500"/>
                 </div>
-
-                <motion.div
-                  initial={{ scale: 0, rotate: -45 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.3, type: "spring" }}
-                  className="absolute -top-1 -right-1 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full p-1.5 shadow-lg"
-                >
-                  <Crown className="w-4 h-4 text-white" />
-                </motion.div>
               </div>
 
               <p className="text-xs md:text-sm font-bold text-gray-800 mt-3 text-center">{ketua.name}</p>
-              <div className="flex items-center gap-1 mt-1 px-2 py-0.5 bg-yellow-50 rounded-full">
-                <Crown className="w-3 h-3 text-yellow-600" />
-                <span className="text-[10px] md:text-xs font-bold text-yellow-700">KETUA</span>
+              <div className="mt-1 rounded-full bg-emerald-50 px-2 py-0.5">
+                <span className="text-[10px] font-bold text-emerald-700 md:text-xs">KETUA</span>
               </div>
             </motion.div>
 

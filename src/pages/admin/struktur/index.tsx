@@ -12,8 +12,19 @@ type MemberForm = {
   imageUrl: string;
 };
 
+type DepartmentForm = {
+  name: string;
+  staffCount: number;
+};
+
+type SettingForm = {
+  period: string;
+};
+
 export default function OrganizationStructurePage() {
   const [members, setMembers] = useState<MemberForm[]>([]);
+  const [departments, setDepartments] = useState<DepartmentForm[]>([]);
+  const [period, setPeriod] = useState("2024/2025");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -22,8 +33,14 @@ export default function OrganizationStructurePage() {
     fetch("/api/admin/struktur")
       .then(async (response) => {
         if (!response.ok) throw new Error();
-        const saved = (await response.json()) as MemberForm[];
-        const savedByPosition = new Map(saved.map((member) => [member.position, member]));
+        const saved = (await response.json()) as {
+          members: MemberForm[];
+          departments: DepartmentForm[];
+          setting: SettingForm | null;
+        };
+        const savedByPosition = new Map(saved.members.map((member) => [member.position, member]));
+        const departmentSlots = organizationSlots.filter((slot) => slot.section === "department");
+        const savedDepartments = new Map(saved.departments.map((department) => [department.name, department]));
         setMembers(
           organizationSlots.map((slot) => {
             const member = savedByPosition.get(slot.position);
@@ -34,6 +51,13 @@ export default function OrganizationStructurePage() {
             };
           })
         );
+        setDepartments(
+          Array.from(new Set(departmentSlots.map((slot) => slot.department))).map((name) => ({
+            name: name || "",
+            staffCount: savedDepartments.get(name || "")?.staffCount ?? departmentSlots.find((slot) => slot.department === name)?.staffCount ?? 0,
+          }))
+        );
+        setPeriod(saved.setting?.period || "2024/2025");
       })
       .catch(() => toast.error("Gagal memuat struktur organisasi"))
       .finally(() => setLoading(false));
@@ -48,6 +72,14 @@ export default function OrganizationStructurePage() {
     setMembers((current) =>
       current.map((member) =>
         member.position === position ? { ...member, ...changes } : member
+      )
+    );
+  };
+
+  const updateDepartment = (name: string, staffCount: number) => {
+    setDepartments((current) =>
+      current.map((department) =>
+        department.name === name ? { ...department, staffCount } : department
       )
     );
   };
@@ -90,7 +122,7 @@ export default function OrganizationStructurePage() {
       const response = await fetch("/api/admin/struktur", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ members }),
+        body: JSON.stringify({ members, departments, setting: { period } }),
       });
       if (!response.ok) throw new Error();
       toast.success("Struktur organisasi berhasil disimpan");
@@ -141,7 +173,7 @@ export default function OrganizationStructurePage() {
 
   const leadership = organizationSlots.filter((slot) => slot.section === "leadership");
   const executive = organizationSlots.filter((slot) => slot.section === "executive");
-  const departments = Array.from(
+  const departmentNames = Array.from(
     new Set(organizationSlots.filter((slot) => slot.section === "department").map((slot) => slot.department))
   );
 
@@ -158,6 +190,16 @@ export default function OrganizationStructurePage() {
                 <p className="mt-1 text-gray-600">Isi nama dan foto pengurus untuk halaman Tentang Kami.</p>
               </div>
             </div>
+            <label className="mt-5 block max-w-sm text-sm font-medium text-gray-700">
+              Periode Kepengurusan
+              <input
+                value={period}
+                onChange={(event) => setPeriod(event.target.value)}
+                maxLength={50}
+                placeholder="Contoh: 2025/2026"
+                className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              />
+            </label>
           </div>
           <button
             onClick={save}
@@ -181,9 +223,22 @@ export default function OrganizationStructurePage() {
               <h2 className="mb-4 text-xl font-bold text-gray-900">Sekretaris dan Bendahara</h2>
               <div className="grid gap-4 lg:grid-cols-3">{executive.map((slot) => renderMemberForm(slot.position))}</div>
             </section>
-            {departments.map((department) => (
+            {departmentNames.map((department) => (
               <section key={department}>
-                <h2 className="mb-4 text-xl font-bold text-gray-900">{department}</h2>
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <h2 className="text-xl font-bold text-gray-900">{department}</h2>
+                  <label className="flex items-center gap-3 text-sm font-medium text-gray-700">
+                    Total Anggota
+                    <input
+                      type="number"
+                      min="0"
+                      value={departments.find((item) => item.name === department)?.staffCount ?? 0}
+                      onChange={(event) => updateDepartment(department || "", Math.max(0, Number(event.target.value) || 0))}
+                      className="w-24 rounded-lg border border-gray-300 px-3 py-2 text-right text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    />
+                    <span>staff</span>
+                  </label>
+                </div>
                 <div className="grid gap-4 lg:grid-cols-3">
                   {organizationSlots.filter((slot) => slot.department === department).map((slot) => renderMemberForm(slot.position))}
                 </div>
